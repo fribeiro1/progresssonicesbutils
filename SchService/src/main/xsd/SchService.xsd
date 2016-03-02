@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2011 Fernando Ribeiro
+
+This file is part of Progress Sonic ESB Utils.
+
+Progress Sonic ESB Utils is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+Progress Sonic ESB Utils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with Progress Sonic ESB Utils. If not, see <http://www.gnu.org/licenses/>.
+-->
+<xs:schema elementFormDefault="qualified"
+	targetNamespace="http://www.progress.com/codeshare/esbservice/sch/model"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.progress.com/codeshare/esbservice/sch/model">
+	<xs:complexType name="CronTrigger">
+		<xs:complexContent>
+			<xs:extension base="tns:Trigger">
+				<xs:sequence>
+					<xs:element name="Expr" type="xs:string" />
+					<xs:element name="TimeZone" type="xs:string" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Job">
+		<xs:sequence>
+			<xs:element name="JobDetail" type="tns:JobDetail" />
+			<xs:choice>
+				<xs:group ref="tns:TriggerTypes" />
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="JobDetail">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" />
+			<xs:element name="Grp" type="xs:string" minOccurs="0" />
+			<xs:element name="Domain" type="xs:string" minOccurs="0" />
+			<xs:element name="ConnFactory" type="xs:string" />
+			<xs:element name="Destination" type="xs:string" />
+			<xs:element name="User" type="xs:string" minOccurs="0" />
+			<xs:element name="Password" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SchConfig">
+		<xs:sequence>
+			<xs:element name="Job" type="tns:Job" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SimpleTrigger">
+		<xs:complexContent>
+			<xs:extension base="tns:Trigger">
+				<xs:sequence>
+					<xs:element name="RepeatCount" type="xs:int" minOccurs="0" />
+					<xs:element name="RepeatInterval" type="xs:int"
+						minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Trigger">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" />
+			<xs:element name="Grp" type="xs:string" minOccurs="0" />
+			<xs:element name="StartTime" type="xs:date" minOccurs="0" />
+			<xs:element name="EndTime" type="xs:date" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="SchConfig" type="tns:SchConfig" />
+	<xs:group name="TriggerTypes">
+		<xs:sequence>
+			<xs:element name="Cron" type="tns:CronTrigger" />
+			<xs:element name="Simple" type="tns:SimpleTrigger" />
+		</xs:sequence>
+	</xs:group>
+</xs:schema>

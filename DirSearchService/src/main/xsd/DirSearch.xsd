@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2011 Fernando Ribeiro
+
+This file is part of Progress Sonic ESB Utils.
+
+Progress Sonic ESB Utils is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+Progress Sonic ESB Utils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with Progress Sonic ESB Utils. If not, see <http://www.gnu.org/licenses/>.
+-->
+<xs:schema elementFormDefault="qualified"
+        targetNamespace="http://www.progress.com/codeshare/esbservice/dirSearch/model"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://www.progress.com/codeshare/esbservice/dirSearch/model">
+    <xs:complexType name="Attribute">
+        <xs:sequence>
+            <xs:element name="Value" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="ID" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="Attributes">
+        <xs:sequence>
+            <xs:element name="Attribute" type="tns:Attribute" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Controls">
+        <xs:sequence>
+            <xs:element name="Scope" type="tns:Scope"/>
+            <xs:element name="Attributes" type="tns:Attributes" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DirSearch">
+        <xs:sequence>
+            <xs:element name="Context" type="xs:string"/>
+            <xs:element name="FilterExpression" type="xs:string"/>
+            <xs:element name="FilterArgument" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Controls" type="tns:Controls"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DirSearchResponse">
+        <xs:sequence>
+            <xs:element name="Result" type="tns:Result" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Result">
+        <xs:sequence>
+            <xs:element name="Attribute" type="tns:Attribute" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="ID" type="xs:string"/>
+    </xs:complexType>
+    <xs:simpleType name="Scope">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OBJECT_SCOPE"/>
+            <xs:enumeration value="ONELEVEL_SCOPE"/>
+            <xs:enumeration value="SUBTREE_SCOPE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:element name="DirSearch" type="tns:DirSearch"/>
+    <xs:element name="DirSearchResponse" type="tns:DirSearchResponse"/>
+</xs:schema>

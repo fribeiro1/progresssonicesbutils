@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2011 Fernando Ribeiro
+
+This file is part of Progress Sonic ESB Utils.
+
+Progress Sonic ESB Utils is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+Progress Sonic ESB Utils is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with Progress Sonic ESB Utils. If not, see <http://www.gnu.org/licenses/>.
+-->
+<xs:schema elementFormDefault="qualified"
+        targetNamespace="http://www.progress.com/codeshare/esbservice/dirAuth/model"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://www.progress.com/codeshare/esbservice/dirAuth/model">
+    <xs:complexType name="Control">
+        <xs:attribute name="ID" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="DirAuth">
+        <xs:sequence>
+            <xs:element name="Method" type="xs:string"/>
+            <xs:element name="Principal" type="xs:string"/>
+            <xs:element name="Credentials" type="xs:string"/>
+            <xs:element name="Control" type="tns:Control" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DirAuthResponse">
+        <xs:sequence>
+            <xs:element name="Authenticated" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="DirAuth" type="tns:DirAuth"/>
+    <xs:element name="DirAuthResponse" type="tns:DirAuthResponse"/>
+</xs:schema>
