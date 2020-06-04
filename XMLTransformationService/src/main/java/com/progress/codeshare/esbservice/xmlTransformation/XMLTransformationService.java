@@ -33,11 +33,11 @@ import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 import com.sonicsw.xq.service.common.ServiceConstants;
 
-public final class XMLTransformationService implements XQServiceEx {
-	private static final String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
-	private static final String PARAM_MESSAGE_PART = "messagePart";
-	private static final String PARAM_MSG_PART_INDEX = "msgPartIndex";
-	private static final String PARAM_STYLESHEET = "stylesheet";
+public class XMLTransformationService implements XQServiceEx {
+	private static String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
+	private static String PARAM_MESSAGE_PART = "messagePart";
+	private static String PARAM_MSG_PART_INDEX = "msgPartIndex";
+	private static String PARAM_STYLESHEET = "stylesheet";
 
 	public void destroy() {
 	}
@@ -45,41 +45,41 @@ public final class XMLTransformationService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQMessageFactory msgFactory = ctx.getMessageFactory();
+			XQMessageFactory msgFactory = ctx.getMessageFactory();
 
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
 					XQConstants.PARAM_STRING);
 
-			final boolean keepOriginalPart = params.getBooleanParameter(
+			boolean keepOriginalPart = params.getBooleanParameter(
 					PARAM_KEEP_ORIGINAL_PART, XQConstants.PARAM_STRING);
 
-			final String stylesheet = params.getParameter(PARAM_STYLESHEET,
+			String stylesheet = params.getParameter(PARAM_STYLESHEET,
 					XQConstants.PARAM_STRING);
 
-			final TransformerFactory transformerFactory = TransformerFactory
+			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
 
-			final Transformer transformer = transformerFactory
+			Transformer transformer = transformerFactory
 					.newTransformer(new StreamSource(new StringReader(
 							stylesheet)));
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage origMsg = env.getMessage();
+				XQMessage origMsg = env.getMessage();
 
-				final XQMessage newMsg = msgFactory.createMessage();
+				XQMessage newMsg = msgFactory.createMessage();
 
 				/* Copy all headers of the original message to the new message */
-				final Iterator headerIterator = origMsg.getHeaderNames();
+				Iterator headerIterator = origMsg.getHeaderNames();
 
 				while (headerIterator.hasNext()) {
-					final String name = (String) headerIterator.next();
+					String name = (String) headerIterator.next();
 
 					newMsg.setHeaderValue(name, origMsg.getHeaderValue(name));
 				}
@@ -90,7 +90,7 @@ public final class XMLTransformationService implements XQServiceEx {
 				 */
 				transformer.setParameter(ServiceConstants.XQMessage, origMsg);
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				for (int i = 0; i < origMsg.getPartCount(); i++) {
 
@@ -104,7 +104,7 @@ public final class XMLTransformationService implements XQServiceEx {
 						transformer.setParameter(PARAM_MSG_PART_INDEX,
 								new Integer(i));
 
-						final XQPart origPart = origMsg.getPart(i);
+						XQPart origPart = origMsg.getPart(i);
 
 						/* Decide whether to keep the original part or not */
 						if (keepOriginalPart) {
@@ -113,13 +113,13 @@ public final class XMLTransformationService implements XQServiceEx {
 							newMsg.addPart(origPart);
 						}
 
-						final XQPart newPart = newMsg.createPart();
+						XQPart newPart = newMsg.createPart();
 
 						newPart.setContentId("Result-" + i);
 
-						final Writer out = new StringWriter();
+						Writer out = new StringWriter();
 
-						final String content = (String) origPart.getContent();
+						String content = (String) origPart.getContent();
 
 						transformer.transform(new StreamSource(
 								new StringReader(content)), new StreamResult(
@@ -147,7 +147,7 @@ public final class XMLTransformationService implements XQServiceEx {
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

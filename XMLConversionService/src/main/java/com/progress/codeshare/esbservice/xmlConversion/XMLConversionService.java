@@ -28,16 +28,16 @@ import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 import com.unidex.xflat.XmlConvert;
 
-public final class XMLConversionService implements XQServiceEx {
-	private static final String MODE_FLAT_TO_FLAT = "Flat to Flat";
-	private static final String MODE_FLAT_TO_XML = "Flat to XML";
-	private static final String MODE_XML_TO_FLAT = "XML to Flat";
+public class XMLConversionService implements XQServiceEx {
+	private static String MODE_FLAT_TO_FLAT = "Flat to Flat";
+	private static String MODE_FLAT_TO_XML = "Flat to XML";
+	private static String MODE_XML_TO_FLAT = "XML to Flat";
 
-	private static final String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
-	private static final String PARAM_MESSAGE_PART = "messagePart";
-	private static final String PARAM_MODE = "mode";
-	private static final String PARAM_SRC_SCHEMA = "srcSchema";
-	private static final String PARAM_TARGET_SCHEMA = "targetSchema";
+	private static String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
+	private static String PARAM_MESSAGE_PART = "messagePart";
+	private static String PARAM_MODE = "mode";
+	private static String PARAM_SRC_SCHEMA = "srcSchema";
+	private static String PARAM_TARGET_SCHEMA = "targetSchema";
 
 	public void destroy() {
 	}
@@ -45,57 +45,57 @@ public final class XMLConversionService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final String mode = params.getParameter(PARAM_MODE,
+			String mode = params.getParameter(PARAM_MODE,
 					XQConstants.PARAM_STRING);
 
-			final XQMessageFactory msgFactory = ctx.getMessageFactory();
+			XQMessageFactory msgFactory = ctx.getMessageFactory();
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
 					XQConstants.PARAM_STRING);
 
-			final boolean keepOriginalPart = params.getBooleanParameter(
+			boolean keepOriginalPart = params.getBooleanParameter(
 					PARAM_KEEP_ORIGINAL_PART, XQConstants.PARAM_STRING);
 
-			final String srcSchema = params.getParameter(PARAM_SRC_SCHEMA,
+			String srcSchema = params.getParameter(PARAM_SRC_SCHEMA,
 					XQConstants.PARAM_STRING);
 
-			final XmlConvert converter = new XmlConvert(new StringReader(
+			XmlConvert converter = new XmlConvert(new StringReader(
 					srcSchema), false);
 
 			if (MODE_FLAT_TO_FLAT.equals(mode)) {
-				final String targetSchema = params.getParameter(
+				String targetSchema = params.getParameter(
 						PARAM_TARGET_SCHEMA, XQConstants.PARAM_STRING);
 
 				while (ctx.hasNextIncoming()) {
-					final XQEnvelope env = ctx.getNextIncoming();
+					XQEnvelope env = ctx.getNextIncoming();
 
-					final XQMessage origMsg = env.getMessage();
+					XQMessage origMsg = env.getMessage();
 
-					final XQMessage newMsg = msgFactory.createMessage();
+					XQMessage newMsg = msgFactory.createMessage();
 
-					final Iterator headerIterator = origMsg.getHeaderNames();
+					Iterator headerIterator = origMsg.getHeaderNames();
 
 					/* Copy all headers from the original message to the new message */
 					while (headerIterator.hasNext()) {
-						final String name = (String) headerIterator.next();
+						String name = (String) headerIterator.next();
 
 						newMsg.setHeaderValue(name, origMsg
 								.getHeaderValue(name));
 					}
 
-					final Iterator addressIterator = env.getAddresses();
+					Iterator addressIterator = env.getAddresses();
 
 					for (int i = 0; i < origMsg.getPartCount(); i++) {
 
 						/* Decide whether to process the part or not */
 						if ((messagePart == i)
 								|| (messagePart == XQConstants.ALL_PARTS)) {
-							final XQPart origPart = origMsg.getPart(i);
+							XQPart origPart = origMsg.getPart(i);
 
 							/* Decide whether to keep the original part or not */
 							if (keepOriginalPart) {
@@ -104,11 +104,11 @@ public final class XMLConversionService implements XQServiceEx {
 								newMsg.addPart(origPart);
 							}
 
-							final XQPart newPart = newMsg.createPart();
+							XQPart newPart = newMsg.createPart();
 
-							final Writer writer = new StringWriter();
+							Writer writer = new StringWriter();
 
-							final String content = (String) origPart
+							String content = (String) origPart
 									.getContent();
 
 							converter.flatToFlat(new StringReader(content),
@@ -136,29 +136,29 @@ public final class XMLConversionService implements XQServiceEx {
 			} else if (MODE_FLAT_TO_XML.equals(mode)) {
 
 				while (ctx.hasNextIncoming()) {
-					final XQEnvelope env = ctx.getNextIncoming();
+					XQEnvelope env = ctx.getNextIncoming();
 
-					final XQMessage origMsg = env.getMessage();
+					XQMessage origMsg = env.getMessage();
 
-					final XQMessage newMsg = msgFactory.createMessage();
+					XQMessage newMsg = msgFactory.createMessage();
 
-					final Iterator nameIterator = origMsg.getHeaderNames();
+					Iterator nameIterator = origMsg.getHeaderNames();
 
 					while (nameIterator.hasNext()) {
-						final String name = (String) nameIterator.next();
+						String name = (String) nameIterator.next();
 
 						newMsg.setHeaderValue(name, origMsg
 								.getHeaderValue(name));
 					}
 
-					final Iterator addressIterator = env.getAddresses();
+					Iterator addressIterator = env.getAddresses();
 
 					for (int i = 0; i < origMsg.getPartCount(); i++) {
 
 						/* Decide whether to process the part or not */
 						if ((messagePart == i)
 								|| (messagePart == XQConstants.ALL_PARTS)) {
-							final XQPart origPart = origMsg.getPart(i);
+							XQPart origPart = origMsg.getPart(i);
 
 							/* Decide whether to keep the original part or not */
 							if (keepOriginalPart) {
@@ -167,11 +167,11 @@ public final class XMLConversionService implements XQServiceEx {
 								newMsg.addPart(origPart);
 							}
 
-							final XQPart newPart = newMsg.createPart();
+							XQPart newPart = newMsg.createPart();
 
-							final Writer writer = new StringWriter();
+							Writer writer = new StringWriter();
 
-							final String content = (String) origPart
+							String content = (String) origPart
 									.getContent();
 
 							converter.flatToXml(new StringReader(content),
@@ -199,29 +199,29 @@ public final class XMLConversionService implements XQServiceEx {
 			} else if (MODE_XML_TO_FLAT.equals(mode)) {
 
 				while (ctx.hasNextIncoming()) {
-					final XQEnvelope env = ctx.getNextIncoming();
+					XQEnvelope env = ctx.getNextIncoming();
 
-					final XQMessage origMsg = env.getMessage();
+					XQMessage origMsg = env.getMessage();
 
-					final XQMessage newMsg = msgFactory.createMessage();
+					XQMessage newMsg = msgFactory.createMessage();
 
-					final Iterator nameIterator = origMsg.getHeaderNames();
+					Iterator nameIterator = origMsg.getHeaderNames();
 
 					while (nameIterator.hasNext()) {
-						final String name = (String) nameIterator.next();
+						String name = (String) nameIterator.next();
 
 						newMsg.setHeaderValue(name, origMsg
 								.getHeaderValue(name));
 					}
 
-					final Iterator addressIterator = env.getAddresses();
+					Iterator addressIterator = env.getAddresses();
 
 					for (int i = 0; i < origMsg.getPartCount(); i++) {
 
 						/* Decide whether to process the part or not */
 						if ((messagePart == i)
 								|| (messagePart == XQConstants.ALL_PARTS)) {
-							final XQPart origPart = origMsg.getPart(i);
+							XQPart origPart = origMsg.getPart(i);
 
 							/* Decide whether to keep the original part or not */
 							if (keepOriginalPart) {
@@ -230,11 +230,11 @@ public final class XMLConversionService implements XQServiceEx {
 								newMsg.addPart(origPart);
 							}
 
-							final XQPart newPart = newMsg.createPart();
+							XQPart newPart = newMsg.createPart();
 
-							final Writer writer = new StringWriter();
+							Writer writer = new StringWriter();
 
-							final String content = (String) origPart
+							String content = (String) origPart
 									.getContent();
 
 							converter.xmlToFlat(new StringReader(content),
@@ -261,7 +261,7 @@ public final class XMLConversionService implements XQServiceEx {
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

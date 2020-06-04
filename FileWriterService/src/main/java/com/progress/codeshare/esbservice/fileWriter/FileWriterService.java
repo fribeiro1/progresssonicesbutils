@@ -27,10 +27,10 @@ import com.sonicsw.xq.XQService;
 import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceException;
 
-public final class FileWriterService implements XQService {
-	private static final String PARAM_FILE = "name";
-	private static final String PARAM_DIRECTORY = "directory";
-	private static final String PARAM_MESSAGE_PART = "messagePart";
+public class FileWriterService implements XQService {
+	private static String PARAM_FILE = "name";
+	private static String PARAM_DIRECTORY = "directory";
+	private static String PARAM_MESSAGE_PART = "messagePart";
 
 	public void destroy() {
 	}
@@ -38,40 +38,40 @@ public final class FileWriterService implements XQService {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 		Writer writer = null;
 
 		try {
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
 					XQConstants.PARAM_STRING);
 
-			final String directory = params.getParameter(PARAM_DIRECTORY,
+			String directory = params.getParameter(PARAM_DIRECTORY,
 					XQConstants.PARAM_STRING);
 
-			final String file = params.getParameter(PARAM_FILE,
+			String file = params.getParameter(PARAM_FILE,
 					XQConstants.PARAM_STRING);
 
 			writer = new BufferedWriter(new FileWriter(directory + file));
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage msg = env.getMessage();
+				XQMessage msg = env.getMessage();
 
-				final XQPart part = msg.getPart(messagePart);
+				XQPart part = msg.getPart(messagePart);
 
 				writer.write((String) part.getContent());
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				if (addressIterator.hasNext())
 					ctx.addOutgoing(env);
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		} finally {
 
@@ -79,7 +79,7 @@ public final class FileWriterService implements XQService {
 
 				try {
 					writer.close();
-				} catch (final IOException e) {
+				} catch (IOException e) {
 					throw new XQServiceException(e);
 				}
 

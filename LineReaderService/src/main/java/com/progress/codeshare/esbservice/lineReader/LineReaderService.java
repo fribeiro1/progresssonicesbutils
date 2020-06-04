@@ -27,8 +27,8 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class LineReaderService implements XQServiceEx {
-	private static final String PARAM_FILE = "file";
+public class LineReaderService implements XQServiceEx {
+	private static String PARAM_FILE = "file";
 
 	public void destroy() {
 	}
@@ -36,29 +36,29 @@ public final class LineReaderService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 		BufferedReader reader = null;
 
 		try {
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final String file = params.getParameter(PARAM_FILE,
+			String file = params.getParameter(PARAM_FILE,
 					XQConstants.PARAM_STRING);
 
 			reader = new BufferedReader(new FileReader(file));
 
 			String line = reader.readLine();
 
-			final XQMessageFactory factory = ctx.getMessageFactory();
+			XQMessageFactory factory = ctx.getMessageFactory();
 
-			final XQEnvelope env = ctx.getFirstIncoming();
+			XQEnvelope env = ctx.getFirstIncoming();
 
-			final Iterator addressIterator = env.getAddresses();
+			Iterator addressIterator = env.getAddresses();
 
 			while (line != null) {
-				final XQMessage msg = factory.createMessage();
+				XQMessage msg = factory.createMessage();
 
-				final XQPart part = msg.createPart();
+				XQPart part = msg.createPart();
 
 				part.setContentId("Result");
 
@@ -72,7 +72,7 @@ public final class LineReaderService implements XQServiceEx {
 				line = reader.readLine();
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		} finally {
 
@@ -80,7 +80,7 @@ public final class LineReaderService implements XQServiceEx {
 
 				try {
 					reader.close();
-				} catch (final IOException e) {
+				} catch (IOException e) {
 					throw new XQServiceException(e);
 				}
 

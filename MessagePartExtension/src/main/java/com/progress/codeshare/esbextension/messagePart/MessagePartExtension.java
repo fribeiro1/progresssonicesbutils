@@ -28,11 +28,11 @@ import com.sonicsw.xq.XQMessageException;
 import com.sonicsw.xq.XQPart;
 import com.sonicsw.xq.service.common.ServiceConstants;
 
-public final class MessagePartExtension {
-	private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory
+public class MessagePartExtension {
+	private static DocumentBuilderFactory FACTORY = DocumentBuilderFactory
 			.newInstance();
 
-	private static final String PARAM_MSG_PART_INDEX = "msgPartIndex";
+	private static String PARAM_MSG_PART_INDEX = "msgPartIndex";
 
 	private DocumentBuilder builder;
 
@@ -40,114 +40,114 @@ public final class MessagePartExtension {
 		builder = FACTORY.newDocumentBuilder();
 	}
 
-	public Object getProperty(final XPathContext ctx, final String name)
+	public Object getProperty(XPathContext ctx, String name)
 			throws XQMessageException {
-		final Controller controller = ctx.getController();
+		Controller controller = ctx.getController();
 
-		final XQMessage msg = (XQMessage) controller
+		XQMessage msg = (XQMessage) controller
 				.getParameter(ServiceConstants.XQMessage);
 
-		final XQPart part = msg.getPart(((Integer) controller
+		XQPart part = msg.getPart(((Integer) controller
 				.getParameter(PARAM_MSG_PART_INDEX)).intValue());
 
 		return part.getHeader().getValue(name);
 	}
 
-	public Object getProperty(final XPathContext ctx, final String name,
-			final int index) throws XQMessageException {
-		final Controller controller = ctx.getController();
+	public Object getProperty(XPathContext ctx, String name,
+			int index) throws XQMessageException {
+		Controller controller = ctx.getController();
 
-		final XQMessage msg = (XQMessage) controller
+		XQMessage msg = (XQMessage) controller
 				.getParameter(ServiceConstants.XQMessage);
 
-		final XQPart part = msg.getPart(index);
+		XQPart part = msg.getPart(index);
 
 		return part.getHeader().getValue(name);
 	}
 
-	public String getStringContent(final XPathContext ctx, final int index)
+	public String getStringContent(XPathContext ctx, int index)
 			throws XQMessageException {
-		final Controller controller = ctx.getController();
+		Controller controller = ctx.getController();
 
-		final XQMessage msg = (XQMessage) controller
+		XQMessage msg = (XQMessage) controller
 				.getParameter(ServiceConstants.XQMessage);
 
-		final XQPart part = msg.getPart(index);
+		XQPart part = msg.getPart(index);
 
 		return (String) part.getContent();
 	}
 
-	public String getStringContent(final XPathContext ctx, final String index)
+	public String getStringContent(XPathContext ctx, String index)
 			throws XQMessageException {
-		final Controller controller = ctx.getController();
+		Controller controller = ctx.getController();
 
-		final XQMessage msg = (XQMessage) controller
+		XQMessage msg = (XQMessage) controller
 				.getParameter(ServiceConstants.XQMessage);
 
-		final XQPart part = msg.getPart(index);
+		XQPart part = msg.getPart(index);
 
 		return (String) part.getContent();
 	}
 
-	public Document getXMLContent(final XPathContext ctx, final int index)
+	public Document getXMLContent(XPathContext ctx, int index)
 			throws XQMessageException {
 
 		try {
-			final Controller controller = ctx.getController();
+			Controller controller = ctx.getController();
 
-			final XQMessage msg = (XQMessage) controller
+			XQMessage msg = (XQMessage) controller
 					.getParameter(ServiceConstants.XQMessage);
 
-			final XQPart part = msg.getPart(index);
+			XQPart part = msg.getPart(index);
 
 			return builder.parse(new InputSource(new StringReader((String) part
 					.getContent())));
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQMessageException(e);
 		}
 
 	}
 
-	public Document getXMLContent(final XPathContext ctx, final String index)
+	public Document getXMLContent(XPathContext ctx, String index)
 			throws XQMessageException {
 
 		try {
-			final Controller controller = ctx.getController();
+			Controller controller = ctx.getController();
 
-			final XQMessage msg = (XQMessage) controller
+			XQMessage msg = (XQMessage) controller
 					.getParameter(ServiceConstants.XQMessage);
 
-			final XQPart part = msg.getPart(index);
+			XQPart part = msg.getPart(index);
 
 			return builder.parse(new InputSource(new StringReader((String) part
 					.getContent())));
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQMessageException(e);
 		}
 
 	}
 
-	public void setProperty(final XPathContext ctx, final String name,
-			final String value) throws XQMessageException {
-		final Controller controller = ctx.getController();
+	public void setProperty(XPathContext ctx, String name,
+			String value) throws XQMessageException {
+		Controller controller = ctx.getController();
 
-		final XQMessage msg = (XQMessage) controller
+		XQMessage msg = (XQMessage) controller
 				.getParameter(ServiceConstants.XQMessage);
 
-		final XQPart part = msg.getPart(((Integer) controller
+		XQPart part = msg.getPart(((Integer) controller
 				.getParameter(PARAM_MSG_PART_INDEX)).intValue());
 
 		part.getHeader().setValue(name, value);
 	}
 
-	public void setProperty(final XPathContext ctx, final String name,
-			final String value, final int index) throws XQMessageException {
-		final Controller controller = ctx.getController();
+	public void setProperty(XPathContext ctx, String name,
+			String value, int index) throws XQMessageException {
+		Controller controller = ctx.getController();
 
-		final XQMessage msg = (XQMessage) controller
+		XQMessage msg = (XQMessage) controller
 				.getParameter(ServiceConstants.XQMessage);
 
-		final XQPart part = msg.getPart(index);
+		XQPart part = msg.getPart(index);
 
 		part.getHeader().setValue(name, value);
 	}

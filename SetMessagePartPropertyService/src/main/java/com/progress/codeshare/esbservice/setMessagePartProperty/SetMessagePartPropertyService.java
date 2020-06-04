@@ -39,23 +39,23 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class SetMessagePartPropertyService implements XQServiceEx {
-	private static final DateFormat FORMAT = new SimpleDateFormat();
+public class SetMessagePartPropertyService implements XQServiceEx {
+	private static DateFormat FORMAT = new SimpleDateFormat();
 
-	private static final String MODE_XPATH = "XPath";
-	private static final String MODE_DATE_TIME = "Date & Time";
-	private static final String MODE_CONTENT = "Content";
-	private static final String MODE_CONSTANT = "Constant";
+	private static String MODE_XPATH = "XPath";
+	private static String MODE_DATE_TIME = "Date & Time";
+	private static String MODE_CONTENT = "Content";
+	private static String MODE_CONSTANT = "Constant";
 
-	private static final String PARAM_CONSTANT = "constant";
-	private static final String PARAM_DATE_TIME = "dateTime";
-	private static final String PARAM_MESSAGE_PART = "messagePart";
-	private static final String PARAM_MODE = "mode";
-	private static final String PARAM_NAME = "name";
-	private static final String PARAM_NAMESPACES = "namespaces";
-	private static final String PARAM_XPATH = "xpath";
+	private static String PARAM_CONSTANT = "constant";
+	private static String PARAM_DATE_TIME = "dateTime";
+	private static String PARAM_MESSAGE_PART = "messagePart";
+	private static String PARAM_MODE = "mode";
+	private static String PARAM_NAME = "name";
+	private static String PARAM_NAMESPACES = "namespaces";
+	private static String PARAM_XPATH = "xpath";
 
-	private static final Pattern PATTERN_NAMESPACE = Pattern
+	private static Pattern PATTERN_NAMESPACE = Pattern
 			.compile("([-._:A-Za-z0-9]*)=([^,]*),?");
 
 	public void destroy() {
@@ -64,39 +64,39 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final String mode = params.getParameter(PARAM_MODE,
+			String mode = params.getParameter(PARAM_MODE,
 					XQConstants.PARAM_STRING);
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
 					XQConstants.PARAM_STRING);
 
-			final String name = params.getParameter(PARAM_NAME,
+			String name = params.getParameter(PARAM_NAME,
 					XQConstants.PARAM_STRING);
 
 			if (MODE_CONSTANT.equals(mode)) {
-				final String constant = params.getParameter(PARAM_CONSTANT,
+				String constant = params.getParameter(PARAM_CONSTANT,
 						XQConstants.PARAM_STRING);
 
 				if (constant != null) {
 
 					while (ctx.hasNextIncoming()) {
-						final XQEnvelope env = ctx.getNextIncoming();
+						XQEnvelope env = ctx.getNextIncoming();
 
-						final XQMessage msg = env.getMessage();
+						XQMessage msg = env.getMessage();
 
 						for (int i = 0; i < msg.getPartCount(); i++) {
 
 							/* Decide whether to process the part or not */
 							if ((messagePart == i)
 									|| (messagePart == XQConstants.ALL_PARTS)) {
-								final XQPart part = msg.getPart(i);
+								XQPart part = msg.getPart(i);
 
-								final XQHeader header = part.getHeader();
+								XQHeader header = part.getHeader();
 
 								header.setValue(name, constant);
 
@@ -109,7 +109,7 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 
 						}
 
-						final Iterator addressIterator = env.getAddresses();
+						Iterator addressIterator = env.getAddresses();
 
 						if (addressIterator.hasNext())
 							ctx.addOutgoing(env);
@@ -121,18 +121,18 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 			} else if (MODE_CONTENT.equals(mode)) {
 
 				while (ctx.hasNextIncoming()) {
-					final XQEnvelope env = ctx.getNextIncoming();
+					XQEnvelope env = ctx.getNextIncoming();
 
-					final XQMessage msg = env.getMessage();
+					XQMessage msg = env.getMessage();
 
 					for (int i = 0; i < msg.getPartCount(); i++) {
 
 						/* Decide whether to process the part or not */
 						if ((messagePart == i)
 								|| (messagePart == XQConstants.ALL_PARTS)) {
-							final XQPart part = msg.getPart(i);
+							XQPart part = msg.getPart(i);
 
-							final XQHeader header = part.getHeader();
+							XQHeader header = part.getHeader();
 
 							header.setValue(name, (String) part.getContent());
 
@@ -145,7 +145,7 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 
 					}
 
-					final Iterator addressIterator = env.getAddresses();
+					Iterator addressIterator = env.getAddresses();
 
 					if (addressIterator.hasNext())
 						ctx.addOutgoing(env);
@@ -153,24 +153,24 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 				}
 
 			} else if (MODE_DATE_TIME.equals(mode)) {
-				final String dateTime = params.getParameter(PARAM_DATE_TIME,
+				String dateTime = params.getParameter(PARAM_DATE_TIME,
 						XQConstants.PARAM_STRING);
 
-				final Date date = FORMAT.parse(dateTime);
+				Date date = FORMAT.parse(dateTime);
 
 				while (ctx.hasNextIncoming()) {
-					final XQEnvelope env = ctx.getNextIncoming();
+					XQEnvelope env = ctx.getNextIncoming();
 
-					final XQMessage msg = env.getMessage();
+					XQMessage msg = env.getMessage();
 
 					for (int i = 0; i < msg.getPartCount(); i++) {
 
 						/* Decide whether to process the part or not */
 						if ((messagePart == i)
 								|| (messagePart == XQConstants.ALL_PARTS)) {
-							final XQPart part = msg.getPart(i);
+							XQPart part = msg.getPart(i);
 
-							final XQHeader header = part.getHeader();
+							XQHeader header = part.getHeader();
 
 							header.setValue(name, date.toString());
 
@@ -183,7 +183,7 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 
 					}
 
-					final Iterator addressIterator = env.getAddresses();
+					Iterator addressIterator = env.getAddresses();
 
 					if (addressIterator.hasNext())
 						ctx.addOutgoing(env);
@@ -191,24 +191,24 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 				}
 
 			} else if (MODE_XPATH.equals(mode)) {
-				final String expr = params.getParameter(PARAM_XPATH,
+				String expr = params.getParameter(PARAM_XPATH,
 						XQConstants.PARAM_STRING);
 
 				if (expr != null) {
-					final XPathFactory factory = XPathFactory
+					XPathFactory factory = XPathFactory
 							.newInstance(NamespaceConstant.OBJECT_MODEL_SAXON);
 
-					final XPath xpath = factory.newXPath();
+					XPath xpath = factory.newXPath();
 
-					final String namespaces = params.getParameter(
+					String namespaces = params.getParameter(
 							PARAM_NAMESPACES, XQConstants.PARAM_STRING);
 
 					if (namespaces != null) {
-						final Matcher matcher = PATTERN_NAMESPACE
+						Matcher matcher = PATTERN_NAMESPACE
 								.matcher(namespaces);
 
 						/* Configure the namespaces */
-						final IndependentContext resolver = new IndependentContext();
+						IndependentContext resolver = new IndependentContext();
 
 						while (matcher.find())
 							resolver.declareNamespace(matcher.group(1), matcher
@@ -219,18 +219,18 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 					}
 
 					while (ctx.hasNextIncoming()) {
-						final XQEnvelope env = ctx.getNextIncoming();
+						XQEnvelope env = ctx.getNextIncoming();
 
-						final XQMessage msg = env.getMessage();
+						XQMessage msg = env.getMessage();
 
 						for (int i = 0; i < msg.getPartCount(); i++) {
 
 							/* Decide whether to process the part or not */
 							if ((messagePart == i)
 									|| (messagePart == XQConstants.ALL_PARTS)) {
-								final XQPart part = msg.getPart(i);
+								XQPart part = msg.getPart(i);
 
-								final XQHeader header = part.getHeader();
+								XQHeader header = part.getHeader();
 
 								header.setValue(name, xpath.evaluate(expr,
 										new InputSource(new StringReader(
@@ -245,7 +245,7 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 
 						}
 
-						final Iterator addressIterator = env.getAddresses();
+						Iterator addressIterator = env.getAddresses();
 
 						if (addressIterator.hasNext())
 							ctx.addOutgoing(env);
@@ -256,7 +256,7 @@ public final class SetMessagePartPropertyService implements XQServiceEx {
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

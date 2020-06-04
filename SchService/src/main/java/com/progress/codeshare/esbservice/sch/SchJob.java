@@ -30,9 +30,9 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.jobs.ee.jms.JmsMessageFactory;
 
-public final class SchJob implements Job {
+public class SchJob implements Job {
 
-	public void execute(final JobExecutionContext jobCtx)
+	public void execute(JobExecutionContext jobCtx)
 			throws JobExecutionException {
 		Connection conn = null;
 
@@ -41,11 +41,11 @@ public final class SchJob implements Job {
 		MessageProducer producer = null;
 
 		try {
-			final JobDetail detail = jobCtx.getJobDetail();
+			JobDetail detail = jobCtx.getJobDetail();
 
-			final JobDataMap dataMap = detail.getJobDataMap();
+			JobDataMap dataMap = detail.getJobDataMap();
 
-			final Hashtable env = new Hashtable();
+			Hashtable env = new Hashtable();
 
 			env.put(Context.INITIAL_CONTEXT_FACTORY,
 					"com.sonicsw.jndi.mfcontext.MFContextFactory");
@@ -54,15 +54,15 @@ public final class SchJob implements Job {
 				env.put("com.sonicsw.jndi.mfcontext.domain", dataMap
 						.get(SchConstants.PROP_DOMAIN));
 
-			final Context namingCtx = new InitialContext(env);
+			Context namingCtx = new InitialContext(env);
 
-			final ConnectionFactory connFactory = (ConnectionFactory) namingCtx
+			ConnectionFactory connFactory = (ConnectionFactory) namingCtx
 					.lookup(dataMap
 							.getString(SchConstants.PROP_CONNECTION_FACTORY));
 
-			final String user = dataMap.getString(SchConstants.PROP_USER);
+			String user = dataMap.getString(SchConstants.PROP_USER);
 
-			final String password = dataMap
+			String password = dataMap
 					.getString(SchConstants.PROP_PASSWORD);
 
 			if ((user != null) && (password != null))
@@ -72,17 +72,17 @@ public final class SchJob implements Job {
 
 			sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-			final Destination destination = (Destination) namingCtx
+			Destination destination = (Destination) namingCtx
 					.lookup(dataMap.getString(SchConstants.PROP_DESTINATION));
 
 			producer = sess.createProducer(destination);
 
-			final JmsMessageFactory messageFactory = new SchMessageFactory();
+			JmsMessageFactory messageFactory = new SchMessageFactory();
 
-			final Message msg = messageFactory.createMessage(dataMap, sess);
+			Message msg = messageFactory.createMessage(dataMap, sess);
 
 			producer.send(msg);
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new JobExecutionException(e);
 		} finally {
 
@@ -90,7 +90,7 @@ public final class SchJob implements Job {
 
 				try {
 					producer.close();
-				} catch (final JMSException e) {
+				} catch (JMSException e) {
 					throw new JobExecutionException(e);
 				} finally {
 
@@ -98,7 +98,7 @@ public final class SchJob implements Job {
 
 						try {
 							sess.close();
-						} catch (final JMSException e) {
+						} catch (JMSException e) {
 							throw new JobExecutionException(e);
 						} finally {
 
@@ -106,7 +106,7 @@ public final class SchJob implements Job {
 
 								try {
 									conn.close();
-								} catch (final JMSException e) {
+								} catch (JMSException e) {
 									throw new JobExecutionException(e);
 								}
 
@@ -124,7 +124,7 @@ public final class SchJob implements Job {
 
 				try {
 					sess.close();
-				} catch (final JMSException e) {
+				} catch (JMSException e) {
 					throw new JobExecutionException(e);
 				} finally {
 
@@ -132,7 +132,7 @@ public final class SchJob implements Job {
 
 						try {
 							conn.close();
-						} catch (final JMSException e) {
+						} catch (JMSException e) {
 							throw new JobExecutionException(e);
 						}
 
@@ -146,7 +146,7 @@ public final class SchJob implements Job {
 
 				try {
 					conn.close();
-				} catch (final JMSException e) {
+				} catch (JMSException e) {
 					throw new JobExecutionException(e);
 				}
 

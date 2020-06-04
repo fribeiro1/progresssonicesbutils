@@ -22,8 +22,8 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class RemoveMessagePropertyService implements XQServiceEx {
-	private static final String PARAM_NAME = "name";
+public class RemoveMessagePropertyService implements XQServiceEx {
+	private static String PARAM_NAME = "name";
 
 	public void destroy() {
 	}
@@ -31,29 +31,29 @@ public final class RemoveMessagePropertyService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final String name = params.getParameter(PARAM_NAME,
+			String name = params.getParameter(PARAM_NAME,
 					XQConstants.PARAM_STRING);
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage msg = env.getMessage();
+				XQMessage msg = env.getMessage();
 
 				msg.removeHeader(name);
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				if (addressIterator.hasNext())
 					ctx.addOutgoing(env);
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

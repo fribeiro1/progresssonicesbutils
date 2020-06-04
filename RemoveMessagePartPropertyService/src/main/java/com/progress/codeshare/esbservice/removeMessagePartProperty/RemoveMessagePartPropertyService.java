@@ -24,9 +24,9 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class RemoveMessagePartPropertyService implements XQServiceEx {
-	private static final String PARAM_NAME = "name";
-	private static final String PARAM_MESSAGE_PART = "messagePart";
+public class RemoveMessagePartPropertyService implements XQServiceEx {
+	private static String PARAM_NAME = "name";
+	private static String PARAM_MESSAGE_PART = "messagePart";
 
 	public void destroy() {
 	}
@@ -34,30 +34,30 @@ public final class RemoveMessagePartPropertyService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
 					XQConstants.PARAM_STRING);
 
-			final String name = params.getParameter(PARAM_NAME,
+			String name = params.getParameter(PARAM_NAME,
 					XQConstants.PARAM_STRING);
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage msg = env.getMessage();
+				XQMessage msg = env.getMessage();
 
 				for (int i = 0; i < msg.getPartCount(); i++) {
 
 					/* Decide whether to process the part or not */
 					if ((messagePart == i)
 							|| (messagePart == XQConstants.ALL_PARTS)) {
-						final XQPart part = msg.getPart(i);
+						XQPart part = msg.getPart(i);
 
-						final XQHeader header = part.getHeader();
+						XQHeader header = part.getHeader();
 
 						header.remove(name);
 
@@ -70,14 +70,14 @@ public final class RemoveMessagePartPropertyService implements XQServiceEx {
 
 				}
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				if (addressIterator.hasNext())
 					ctx.addOutgoing(env);
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

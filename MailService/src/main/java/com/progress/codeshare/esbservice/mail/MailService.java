@@ -39,34 +39,34 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class MailService implements XQServiceEx {
-	private static final String PARAM_BCC = "bcc";
-	private static final String PARAM_CC = "cc";
-	private static final String PARAM_FROM = "from";
-	private static final String PARAM_HOST = "host";
-	private static final String PARAM_PORT = "port";
-	private static final String PARAM_REPLY_TO = "replyTo";
-	private static final String PARAM_SUBJECT = "subject";
-	private static final String PARAM_TO = "to";
+public class MailService implements XQServiceEx {
+	private static String PARAM_BCC = "bcc";
+	private static String PARAM_CC = "cc";
+	private static String PARAM_FROM = "from";
+	private static String PARAM_HOST = "host";
+	private static String PARAM_PORT = "port";
+	private static String PARAM_REPLY_TO = "replyTo";
+	private static String PARAM_SUBJECT = "subject";
+	private static String PARAM_TO = "to";
 
-	private static final Pattern PATTERN_HEADER = Pattern
+	private static Pattern PATTERN_HEADER = Pattern
 			.compile("com\\.progress\\.codeshare\\.esbservice\\.mail\\.(.*)");
 
-	private static final String PROP_HOST = "mail.host";
-	private static final String PROP_PORT = "mail.port";
+	private static String PROP_HOST = "mail.host";
+	private static String PROP_PORT = "mail.port";
 
-	private final Properties CONF = new Properties();
+	private Properties CONF = new Properties();
 
 	public void destroy() {
 	}
 
-	public void init(final XQInitContext ctx) {
-		final XQParameters params = ctx.getParameters();
+	public void init(XQInitContext ctx) {
+		XQParameters params = ctx.getParameters();
 
 		CONF.put(PROP_HOST, params.getParameter(PARAM_HOST,
 				XQConstants.PARAM_STRING));
 
-		final String port = params.getParameter(PARAM_PORT,
+		String port = params.getParameter(PARAM_PORT,
 				XQConstants.PARAM_STRING);
 
 		if (port != null)
@@ -74,45 +74,45 @@ public final class MailService implements XQServiceEx {
 
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final Session session = Session.getDefaultInstance(CONF);
+			Session session = Session.getDefaultInstance(CONF);
 
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final String bcc = params.getParameter(PARAM_BCC,
+			String bcc = params.getParameter(PARAM_BCC,
 					XQConstants.PARAM_STRING);
 
-			final String cc = params.getParameter(PARAM_CC,
+			String cc = params.getParameter(PARAM_CC,
 					XQConstants.PARAM_STRING);
 
-			final String from = params.getParameter(PARAM_FROM,
+			String from = params.getParameter(PARAM_FROM,
 					XQConstants.PARAM_STRING);
 
-			final String replyTo = params.getParameter(PARAM_REPLY_TO,
+			String replyTo = params.getParameter(PARAM_REPLY_TO,
 					XQConstants.PARAM_STRING);
 
-			final String subject = params.getParameter(PARAM_SUBJECT,
+			String subject = params.getParameter(PARAM_SUBJECT,
 					XQConstants.PARAM_STRING);
 
-			final String to = params.getParameter(PARAM_TO,
+			String to = params.getParameter(PARAM_TO,
 					XQConstants.PARAM_STRING);
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage msg = env.getMessage();
+				XQMessage msg = env.getMessage();
 
 				/* Copy all headers of the message to the mail message */
-				final Iterator headerIterator = msg.getHeaderNames();
+				Iterator headerIterator = msg.getHeaderNames();
 
-				final Message mail = new MimeMessage(session);
+				Message mail = new MimeMessage(session);
 
 				while (headerIterator.hasNext()) {
-					final String name = (String) headerIterator.next();
+					String name = (String) headerIterator.next();
 
-					final Matcher matcher = PATTERN_HEADER.matcher(name);
+					Matcher matcher = PATTERN_HEADER.matcher(name);
 
 					if (matcher.find())
 						mail.setHeader(matcher.group(1), (String) msg
@@ -151,22 +151,22 @@ public final class MailService implements XQServiceEx {
 							.setRecipient(RecipientType.TO,
 									new InternetAddress(to));
 
-				final Multipart multipart = new MimeMultipart();
+				Multipart multipart = new MimeMultipart();
 
 				/* Map all parts of the message to the mail message */
 				for (int i = 0; i < msg.getPartCount(); i++) {
-					final XQPart msgPart = msg.getPart(i);
+					XQPart msgPart = msg.getPart(i);
 
-					final XQHeader header = msgPart.getHeader();
+					XQHeader header = msgPart.getHeader();
 
-					final Iterator keyIterator = header.getKeys();
+					Iterator keyIterator = header.getKeys();
 
-					final BodyPart bodyPart = new MimeBodyPart();
+					BodyPart bodyPart = new MimeBodyPart();
 
 					while (keyIterator.hasNext()) {
-						final String key = (String) keyIterator.next();
+						String key = (String) keyIterator.next();
 
-						final Matcher matcher = PATTERN_HEADER.matcher(key);
+						Matcher matcher = PATTERN_HEADER.matcher(key);
 
 						if (matcher.find())
 							bodyPart.addHeader(matcher.group(1), bodyPart
@@ -184,14 +184,14 @@ public final class MailService implements XQServiceEx {
 
 				Transport.send(mail);
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				if (addressIterator.hasNext())
 					ctx.addOutgoing(env);
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

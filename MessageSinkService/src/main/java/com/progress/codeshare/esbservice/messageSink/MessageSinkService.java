@@ -19,7 +19,7 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class MessageSinkService implements XQServiceEx {
+public class MessageSinkService implements XQServiceEx {
 
 	public void destroy() {
 	}
@@ -27,12 +27,12 @@ public final class MessageSinkService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		while (ctx.hasNextIncoming()) {
-			final XQEnvelope env = ctx.getNextIncoming();
+			XQEnvelope env = ctx.getNextIncoming();
 
-			final Iterator addressIterator = env.getAddresses();
+			Iterator addressIterator = env.getAddresses();
 
 			if (addressIterator.hasNext())
 				ctx.addOutgoing(env);

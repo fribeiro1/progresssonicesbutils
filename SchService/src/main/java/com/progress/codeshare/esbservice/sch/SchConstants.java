@@ -11,16 +11,16 @@
  */
 package com.progress.codeshare.esbservice.sch;
 
-public final class SchConstants {
-	public static final String PROP_CONNECTION_FACTORY = "connectionFactory";
+public class SchConstants {
+	public static String PROP_CONNECTION_FACTORY = "connectionFactory";
 
-    public static final String PROP_DESTINATION = "destination";
+    public static String PROP_DESTINATION = "destination";
 
-    public static final String PROP_DOMAIN = "domain";
+    public static String PROP_DOMAIN = "domain";
 
-    public static final String PROP_PASSWORD = "password";
+    public static String PROP_PASSWORD = "password";
     
-    public static final String PROP_USER = "user";
+    public static String PROP_USER = "user";
 
     private SchConstants() {
     }

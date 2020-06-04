@@ -13,25 +13,25 @@ package com.progress.codeshare.esbextension.count;
 
 import net.sf.saxon.expr.XPathContext;
 
-public final class CountExtension {
+public class CountExtension {
 	private long count;
 	private long initCount;
 
-	public CountExtension(final long initCount) {
+	public CountExtension(long initCount) {
 		count = initCount;
 
 		this.initCount = initCount;
 	}
 
-	public long getCount(final XPathContext ctx) {
+	public long getCount(XPathContext ctx) {
 		return count;
 	}
 
-	public long next(final XPathContext ctx) {
+	public long next(XPathContext ctx) {
 		return next(ctx, false);
 	}
 
-	public long next(final XPathContext ctx, final boolean resetFlag) {
+	public long next(XPathContext ctx, boolean resetFlag) {
 
 		/* Ensure that Long.MAX_VALUE is higher than the count */
 		if (Long.MAX_VALUE > count)
@@ -42,11 +42,11 @@ public final class CountExtension {
 		return count;
 	}
 
-	public long previous(final XPathContext ctx) {
+	public long previous(XPathContext ctx) {
 		return previous(ctx, false);
 	}
 
-	public long previous(final XPathContext ctx, final boolean resetFlag) {
+	public long previous(XPathContext ctx, boolean resetFlag) {
 
 		/* Ensure that initCount is lower than the count */
 		if (initCount < count)

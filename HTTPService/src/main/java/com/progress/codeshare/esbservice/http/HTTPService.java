@@ -39,22 +39,22 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class HTTPService implements XQServiceEx {
-	private static final String METHOD_DELETE = "DELETE";
-	private static final String METHOD_GET = "GET";
-	private static final String METHOD_POST = "POST";
-	private static final String METHOD_PUT = "PUT";
+public class HTTPService implements XQServiceEx {
+	private static String METHOD_DELETE = "DELETE";
+	private static String METHOD_GET = "GET";
+	private static String METHOD_POST = "POST";
+	private static String METHOD_PUT = "PUT";
 
-	private static final String PARAM_MESSAGE_PART = "messagePart";
-	private static final String PARAM_METHOD = "method";
-	private static final String PARAM_URI = "uri";
+	private static String PARAM_MESSAGE_PART = "messagePart";
+	private static String PARAM_METHOD = "method";
+	private static String PARAM_URI = "uri";
 
-	private static final Pattern PATTERN_HEADER = Pattern
+	private static Pattern PATTERN_HEADER = Pattern
 			.compile("SonicESB_HTTPHeader_(.*)");
-	private static final Pattern PATTERN_PARAM = Pattern
+	private static Pattern PATTERN_PARAM = Pattern
 			.compile("SonicESB_HTTPParam_.(.*)");
 
-	private static final String PREFIX_HEADER = "SonicESB_HTTPHeader_";
+	private static String PREFIX_HEADER = "SonicESB_HTTPHeader_";
 
 	public void destroy() {
 	}
@@ -62,47 +62,47 @@ public final class HTTPService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQMessageFactory factory = ctx.getMessageFactory();
+			XQMessageFactory factory = ctx.getMessageFactory();
 
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
 					XQConstants.PARAM_STRING);
 
-			final String method = params.getParameter(PARAM_METHOD,
+			String method = params.getParameter(PARAM_METHOD,
 					XQConstants.PARAM_STRING);
 
-			final String uri = params.getParameter(PARAM_URI,
+			String uri = params.getParameter(PARAM_URI,
 					XQConstants.PARAM_STRING);
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage origMsg = env.getMessage();
+				XQMessage origMsg = env.getMessage();
 
-				final XQMessage newMsg = factory.createMessage();
+				XQMessage newMsg = factory.createMessage();
 
-				final HttpClient client = new HttpClient();
+				HttpClient client = new HttpClient();
 
-				final Iterator headerIterator = origMsg.getHeaderNames();
+				Iterator headerIterator = origMsg.getHeaderNames();
 
 				if (METHOD_DELETE.equals(method)) {
-					final HttpMethodBase req = new DeleteMethod(uri);
+					HttpMethodBase req = new DeleteMethod(uri);
 
 					/*
 					 * Copy all XQ headers and extract HTTP headers and
 					 * parameters
 					 */
 					while (headerIterator.hasNext()) {
-						final String header = (String) headerIterator.next();
+						String header = (String) headerIterator.next();
 
 						newMsg.setHeaderValue(header, origMsg
 								.getHeaderValue(header));
 
-						final Matcher matcher = PATTERN_HEADER.matcher(header);
+						Matcher matcher = PATTERN_HEADER.matcher(header);
 
 						if (matcher.find())
 							req.addRequestHeader(matcher.group(1),
@@ -114,13 +114,13 @@ public final class HTTPService implements XQServiceEx {
 					client.executeMethod(req);
 
 					/* Transform all HTTP to XQ headers */
-					final Header[] headers = req.getResponseHeaders();
+					Header[] headers = req.getResponseHeaders();
 
 					for (int i = 0; i < headers.length; i++)
 						newMsg.setHeaderValue(PREFIX_HEADER
 								+ headers[i].getName(), headers[i].getValue());
 
-					final XQPart newPart = newMsg.createPart();
+					XQPart newPart = newMsg.createPart();
 
 					newPart.setContentId("Result");
 
@@ -129,21 +129,21 @@ public final class HTTPService implements XQServiceEx {
 
 					newMsg.addPart(newPart);
 				} else if (METHOD_GET.equals(method)) {
-					final HttpMethodBase req = new GetMethod();
+					HttpMethodBase req = new GetMethod();
 
-					final List paramList = new ArrayList();
+					List paramList = new ArrayList();
 
 					/*
 					 * Copy all XQ headers and extract HTTP headers and
 					 * parameters
 					 */
 					while (headerIterator.hasNext()) {
-						final String header = (String) headerIterator.next();
+						String header = (String) headerIterator.next();
 
 						newMsg.setHeaderValue(header, origMsg
 								.getHeaderValue(header));
 
-						final Matcher headerMatcher = PATTERN_HEADER
+						Matcher headerMatcher = PATTERN_HEADER
 								.matcher(header);
 
 						if (headerMatcher.find()) {
@@ -155,7 +155,7 @@ public final class HTTPService implements XQServiceEx {
 							continue;
 						}
 
-						final Matcher paramMatcher = PATTERN_PARAM
+						Matcher paramMatcher = PATTERN_PARAM
 								.matcher(header);
 
 						if (paramMatcher.find())
@@ -171,13 +171,13 @@ public final class HTTPService implements XQServiceEx {
 					client.executeMethod(req);
 
 					/* Transform all HTTP to XQ headers */
-					final Header[] headers = req.getResponseHeaders();
+					Header[] headers = req.getResponseHeaders();
 
 					for (int i = 0; i < headers.length; i++)
 						newMsg.setHeaderValue(PREFIX_HEADER
 								+ headers[i].getName(), headers[i].getValue());
 
-					final XQPart newPart = newMsg.createPart();
+					XQPart newPart = newMsg.createPart();
 
 					newPart.setContentId("Result");
 
@@ -186,19 +186,19 @@ public final class HTTPService implements XQServiceEx {
 
 					newMsg.addPart(newPart);
 				} else if (METHOD_POST.equals(method)) {
-					final PostMethod req = new PostMethod(uri);
+					PostMethod req = new PostMethod(uri);
 
 					/*
 					 * Copy all XQ headers and extract HTTP headers and
 					 * parameters
 					 */
 					while (headerIterator.hasNext()) {
-						final String header = (String) headerIterator.next();
+						String header = (String) headerIterator.next();
 
 						newMsg.setHeaderValue(header, origMsg
 								.getHeaderValue(header));
 
-						final Matcher headerMatcher = PATTERN_HEADER
+						Matcher headerMatcher = PATTERN_HEADER
 								.matcher(header);
 
 						if (headerMatcher.find()) {
@@ -210,7 +210,7 @@ public final class HTTPService implements XQServiceEx {
 							continue;
 						}
 
-						final Matcher paramMatcher = PATTERN_PARAM
+						Matcher paramMatcher = PATTERN_PARAM
 								.matcher(header);
 
 						if (paramMatcher.find())
@@ -220,7 +220,7 @@ public final class HTTPService implements XQServiceEx {
 
 					}
 
-					final XQPart origPart = origMsg.getPart(messagePart);
+					XQPart origPart = origMsg.getPart(messagePart);
 
 					req.setRequestEntity(new StringRequestEntity(
 							(String) origPart.getContent(), origPart
@@ -229,13 +229,13 @@ public final class HTTPService implements XQServiceEx {
 					client.executeMethod(req);
 
 					/* Transform all HTTP to XQ headers */
-					final Header[] headers = req.getResponseHeaders();
+					Header[] headers = req.getResponseHeaders();
 
 					for (int i = 0; i < headers.length; i++)
 						newMsg.setHeaderValue(PREFIX_HEADER
 								+ headers[i].getName(), headers[i].getValue());
 
-					final XQPart newPart = newMsg.createPart();
+					XQPart newPart = newMsg.createPart();
 
 					newPart.setContentId("Result");
 
@@ -244,16 +244,16 @@ public final class HTTPService implements XQServiceEx {
 
 					newMsg.addPart(newPart);
 				} else if (METHOD_PUT.equals(method)) {
-					final EntityEnclosingMethod req = new PutMethod(uri);
+					EntityEnclosingMethod req = new PutMethod(uri);
 
 					/* Copy all XQ headers and extract HTTP headers */
 					while (headerIterator.hasNext()) {
-						final String header = (String) headerIterator.next();
+						String header = (String) headerIterator.next();
 
 						newMsg.setHeaderValue(header, origMsg
 								.getHeaderValue(header));
 
-						final Matcher matcher = PATTERN_HEADER.matcher(header);
+						Matcher matcher = PATTERN_HEADER.matcher(header);
 
 						if (matcher.find())
 							req.addRequestHeader(matcher.group(1),
@@ -262,7 +262,7 @@ public final class HTTPService implements XQServiceEx {
 
 					}
 
-					final XQPart origPart = origMsg.getPart(messagePart);
+					XQPart origPart = origMsg.getPart(messagePart);
 
 					req.setRequestEntity(new StringRequestEntity(
 							(String) origPart.getContent(), origPart
@@ -271,13 +271,13 @@ public final class HTTPService implements XQServiceEx {
 					client.executeMethod(req);
 
 					/* Transform all HTTP to XQ headers */
-					final Header[] headers = req.getResponseHeaders();
+					Header[] headers = req.getResponseHeaders();
 
 					for (int i = 0; i < headers.length; i++)
 						newMsg.setHeaderValue(PREFIX_HEADER
 								+ headers[i].getName(), headers[i].getValue());
 
-					final XQPart newPart = newMsg.createPart();
+					XQPart newPart = newMsg.createPart();
 
 					newPart.setContentId("Result");
 
@@ -289,14 +289,14 @@ public final class HTTPService implements XQServiceEx {
 
 				env.setMessage(newMsg);
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				if (addressIterator.hasNext())
 					ctx.addOutgoing(env);
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

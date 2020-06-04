@@ -61,13 +61,13 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class DBService implements XQServiceEx {
-	private static final String PARAM_DRIVER = "driver";
-	private static final String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
-	private static final String PARAM_MESSAGE_PART = "messagePart";
-	private static final String PARAM_PASSWORD = "password";
-	private static final String PARAM_URL = "url";
-	private static final String PARAM_USERNAME = "username";
+public class DBService implements XQServiceEx {
+	private static String PARAM_DRIVER = "driver";
+	private static String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
+	private static String PARAM_MESSAGE_PART = "messagePart";
+	private static String PARAM_PASSWORD = "password";
+	private static String PARAM_URL = "url";
+	private static String PARAM_USERNAME = "username";
 
 	private String driver;
 
@@ -80,8 +80,8 @@ public final class DBService implements XQServiceEx {
 	public void destroy() {
 	}
 
-	public void init(final XQInitContext ctx) {
-		final XQParameters params = ctx.getParameters();
+	public void init(XQInitContext ctx) {
+		XQParameters params = ctx.getParameters();
 
 		driver = params.getParameter(PARAM_DRIVER, XQConstants.PARAM_STRING);
 
@@ -94,18 +94,18 @@ public final class DBService implements XQServiceEx {
 				.getParameter(PARAM_USERNAME, XQConstants.PARAM_STRING);
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 		Connection dbConn = null;
 
 		try {
-			final XQMessageFactory factory = ctx.getMessageFactory();
+			XQMessageFactory factory = ctx.getMessageFactory();
 
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final boolean keepOriginalPart = params.getBooleanParameter(
+			boolean keepOriginalPart = params.getBooleanParameter(
 					PARAM_KEEP_ORIGINAL_PART, XQConstants.PARAM_STRING);
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART,
 					XQConstants.PARAM_STRING);
 
 			Class.forName(driver);
@@ -113,11 +113,11 @@ public final class DBService implements XQServiceEx {
 			dbConn = DriverManager.getConnection(url, username, password);
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage origMsg = env.getMessage();
+				XQMessage origMsg = env.getMessage();
 
-				final XQMessage newMsg = factory.createMessage();
+				XQMessage newMsg = factory.createMessage();
 
 				for (int i = 0; i < origMsg.getPartCount(); i++) {
 
@@ -129,29 +129,29 @@ public final class DBService implements XQServiceEx {
 						ResultSet dbRs = null;
 
 						try {
-							final XQPart origPart = origMsg.getPart(i);
+							XQPart origPart = origMsg.getPart(i);
 
-							final DBRequestDocument reqDoc = DBRequestDocument.Factory
+							DBRequestDocument reqDoc = DBRequestDocument.Factory
 									.parse((String) origPart.getContent());
 
-							final DBRequest req = reqDoc.getDBRequest();
+							DBRequest req = reqDoc.getDBRequest();
 
 							dbStmt = dbConn.prepareStatement(req.getExpr());
 
-							final XmlCursor xmlCur = req.newCursor();
+							XmlCursor xmlCur = req.newCursor();
 
 							xmlCur
 									.selectPath("declare namespace DB='http://www.progress.com/codeshare/esbservice/db/model'; DB:Bool | DB:Date | DB:Dec | DB:Int | DB:Num | DB:Str | DB:Timestamp");
 
 							while (xmlCur.toNextSelection()) {
-								final Param param = (Param) xmlCur.getObject();
+								Param param = (Param) xmlCur.getObject();
 
-								final int id = param.getId();
+								int id = param.getId();
 
 								if (param instanceof BoolParam) {
 
 									if (!param.isNil()) {
-										final XmlBoolean value = XmlBoolean.Factory
+										XmlBoolean value = XmlBoolean.Factory
 												.newValue(xmlCur.getTextValue());
 
 										dbStmt.setBoolean(id, value
@@ -163,7 +163,7 @@ public final class DBService implements XQServiceEx {
 								} else if (param instanceof DateParam) {
 
 									if (!param.isNil()) {
-										final XmlDate value = XmlDate.Factory
+										XmlDate value = XmlDate.Factory
 												.newValue(xmlCur.getTextValue());
 
 										dbStmt.setDate(id, new Date(value
@@ -175,7 +175,7 @@ public final class DBService implements XQServiceEx {
 								} else if (param instanceof DecParam) {
 
 									if (!param.isNil()) {
-										final XmlDecimal value = XmlDecimal.Factory
+										XmlDecimal value = XmlDecimal.Factory
 												.newValue(xmlCur.getTextValue());
 
 										dbStmt.setBigDecimal(id, value
@@ -187,7 +187,7 @@ public final class DBService implements XQServiceEx {
 								} else if (param instanceof IntParam) {
 
 									if (!param.isNil()) {
-										final XmlInt value = XmlInt.Factory
+										XmlInt value = XmlInt.Factory
 												.newValue(xmlCur.getTextValue());
 
 										dbStmt.setInt(id, value.getIntValue());
@@ -198,7 +198,7 @@ public final class DBService implements XQServiceEx {
 								} else if (param instanceof NumParam) {
 
 									if (!param.isNil()) {
-										final XmlDecimal value = XmlDecimal.Factory
+										XmlDecimal value = XmlDecimal.Factory
 												.newValue(xmlCur.getTextValue());
 
 										dbStmt.setBigDecimal(id, value
@@ -210,7 +210,7 @@ public final class DBService implements XQServiceEx {
 								} else if (param instanceof StrParam) {
 
 									if (!param.isNil()) {
-										final XmlString value = XmlString.Factory
+										XmlString value = XmlString.Factory
 												.newValue(xmlCur.getTextValue());
 
 										dbStmt.setString(id, value
@@ -222,7 +222,7 @@ public final class DBService implements XQServiceEx {
 								} else if (param instanceof TimestampParam) {
 
 									if (!param.isNil()) {
-										final XmlDateTime value = XmlDateTime.Factory
+										XmlDateTime value = XmlDateTime.Factory
 												.newValue(xmlCur.getTextValue());
 
 										dbStmt.setTimestamp(id, new Timestamp(
@@ -244,11 +244,11 @@ public final class DBService implements XQServiceEx {
 							 * Copy all headers of the original message to the
 							 * new message
 							 */
-							final Iterator headerIterator = origMsg
+							Iterator headerIterator = origMsg
 									.getHeaderNames();
 
 							while (headerIterator.hasNext()) {
-								final String name = (String) headerIterator
+								String name = (String) headerIterator
 										.next();
 
 								newMsg.setHeaderValue(name, origMsg
@@ -262,46 +262,46 @@ public final class DBService implements XQServiceEx {
 								newMsg.addPart(origPart);
 							}
 
-							final XQPart newPart = newMsg.createPart();
+							XQPart newPart = newMsg.createPart();
 
 							newPart.setContentId("Result-" + i);
 
-							final DBResponseDocument resDoc = DBResponseDocument.Factory
+							DBResponseDocument resDoc = DBResponseDocument.Factory
 									.newInstance();
 
-							final DBResponse res = resDoc.addNewDBResponse();
+							DBResponse res = resDoc.addNewDBResponse();
 
 							while ((hasMoreResults) || (dbCnt != -1)) {
 
 								if (hasMoreResults) {
 									dbRs = dbStmt.getResultSet();
 
-									final com.progress.codeshare.esbservice.db.model.ResultSet rs = res
+									com.progress.codeshare.esbservice.db.model.ResultSet rs = res
 											.addNewResultSet();
 
-									final ResultSetMetaData dbMetaData = dbRs
+									ResultSetMetaData dbMetaData = dbRs
 											.getMetaData();
 
 									while (dbRs.next()) {
-										final Row row = rs.addNewRow();
+										Row row = rs.addNewRow();
 
 										for (int j = 1; j <= dbMetaData
 												.getColumnCount(); j++) {
-											final int type = dbMetaData
+											int type = dbMetaData
 													.getColumnType(j);
 
-											final String name = dbMetaData
+											String name = dbMetaData
 													.getColumnName(j);
 
 											if (Types.DATE == type) {
-												final DateField field = row
+												DateField field = row
 														.addNewDate();
 
-												final Date dbValue = dbRs
+												Date dbValue = dbRs
 														.getDate(j);
 
 												if (dbValue != null) {
-													final XmlDate value = XmlDate.Factory
+													XmlDate value = XmlDate.Factory
 															.newInstance();
 
 													value.setDateValue(dbValue);
@@ -313,14 +313,14 @@ public final class DBService implements XQServiceEx {
 
 												field.setName(name);
 											} else if (Types.DECIMAL == type) {
-												final DecField field = row
+												DecField field = row
 														.addNewDec();
 
-												final BigDecimal dbValue = dbRs
+												BigDecimal dbValue = dbRs
 														.getBigDecimal(j);
 
 												if (dbValue != null) {
-													final XmlDecimal value = XmlDecimal.Factory
+													XmlDecimal value = XmlDecimal.Factory
 															.newInstance();
 
 													value
@@ -333,10 +333,10 @@ public final class DBService implements XQServiceEx {
 
 												field.setName(name);
 											} else if (Types.INTEGER == type) {
-												final IntField field = row
+												IntField field = row
 														.addNewInt();
 
-												final XmlInt value = XmlInt.Factory
+												XmlInt value = XmlInt.Factory
 														.newInstance();
 
 												value.setIntValue(dbRs
@@ -346,14 +346,14 @@ public final class DBService implements XQServiceEx {
 
 												field.setName(name);
 											} else if (Types.NUMERIC == type) {
-												final NumField field = row
+												NumField field = row
 														.addNewNum();
 
-												final BigDecimal dbValue = dbRs
+												BigDecimal dbValue = dbRs
 														.getBigDecimal(j);
 
 												if (dbValue != null) {
-													final XmlDecimal value = XmlDecimal.Factory
+													XmlDecimal value = XmlDecimal.Factory
 															.newInstance();
 
 													value
@@ -366,14 +366,14 @@ public final class DBService implements XQServiceEx {
 
 												field.setName(name);
 											} else if (Types.TIMESTAMP == type) {
-												final TimestampField field = row
+												TimestampField field = row
 														.addNewTimestamp();
 
-												final Timestamp dbValue = dbRs
+												Timestamp dbValue = dbRs
 														.getTimestamp(j);
 
 												if (dbValue != null) {
-													final XmlDateTime value = XmlDateTime.Factory
+													XmlDateTime value = XmlDateTime.Factory
 															.newInstance();
 
 													value.setDateValue(dbValue);
@@ -385,14 +385,14 @@ public final class DBService implements XQServiceEx {
 
 												field.setName(name);
 											} else {
-												final StrField field = row
+												StrField field = row
 														.addNewStr();
 
-												final String dbValue = dbRs
+												String dbValue = dbRs
 														.getString(j);
 
 												if (dbValue != null) {
-													final XmlString value = XmlString.Factory
+													XmlString value = XmlString.Factory
 															.newInstance();
 
 													value
@@ -414,7 +414,7 @@ public final class DBService implements XQServiceEx {
 								}
 
 								if (dbCnt != -1) {
-									final XmlInt resCnt = res
+									XmlInt resCnt = res
 											.addNewUpdateCount();
 
 									resCnt.setIntValue(dbCnt);
@@ -431,7 +431,7 @@ public final class DBService implements XQServiceEx {
 									XQConstants.CONTENT_TYPE_XML);
 
 							newMsg.addPart(newPart);
-						} catch (final SQLException e) {
+						} catch (SQLException e) {
 							e.printStackTrace();
 						} finally {
 
@@ -439,7 +439,7 @@ public final class DBService implements XQServiceEx {
 
 								try {
 									dbRs.close();
-								} catch (final SQLException e) {
+								} catch (SQLException e) {
 									e.printStackTrace();
 								} finally {
 
@@ -447,7 +447,7 @@ public final class DBService implements XQServiceEx {
 
 										try {
 											dbStmt.close();
-										} catch (final SQLException e) {
+										} catch (SQLException e) {
 											e.printStackTrace();
 										}
 
@@ -465,14 +465,14 @@ public final class DBService implements XQServiceEx {
 
 				env.setMessage(newMsg);
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				if (addressIterator.hasNext())
 					ctx.addOutgoing(env);
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		} finally {
 
@@ -480,7 +480,7 @@ public final class DBService implements XQServiceEx {
 
 				try {
 					dbConn.close();
-				} catch (final SQLException e) {
+				} catch (SQLException e) {
 					throw new XQServiceException(e);
 				}
 

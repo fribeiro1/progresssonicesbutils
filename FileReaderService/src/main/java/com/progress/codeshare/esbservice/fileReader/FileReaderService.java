@@ -27,8 +27,8 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class FileReaderService implements XQServiceEx {
-	private static final String PARAM_FILE = "file";
+public class FileReaderService implements XQServiceEx {
+	private static String PARAM_FILE = "file";
 
 	public void destroy() {
 	}
@@ -36,19 +36,19 @@ public final class FileReaderService implements XQServiceEx {
 	public void init(XQInitContext ctx) {
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQMessageFactory factory = ctx.getMessageFactory();
+			XQMessageFactory factory = ctx.getMessageFactory();
 
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final String file = params.getParameter(PARAM_FILE,
+			String file = params.getParameter(PARAM_FILE,
 					XQConstants.PARAM_STRING);
 
-			final StringBuffer buf = new StringBuffer();
+			StringBuffer buf = new StringBuffer();
 
-			final Reader reader = new BufferedReader(new FileReader(file));
+			Reader reader = new BufferedReader(new FileReader(file));
 
 			int i = reader.read();
 
@@ -60,25 +60,25 @@ public final class FileReaderService implements XQServiceEx {
 
 			reader.close();
 
-			final String content = buf.toString();
+			String content = buf.toString();
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage origMsg = env.getMessage();
+				XQMessage origMsg = env.getMessage();
 
-				final XQMessage newMsg = factory.createMessage();
+				XQMessage newMsg = factory.createMessage();
 
 				/* Copy all headers of the original message to the new message */
-				final Iterator headerIterator = origMsg.getHeaderNames();
+				Iterator headerIterator = origMsg.getHeaderNames();
 
 				while (headerIterator.hasNext()) {
-					final String name = (String) headerIterator.next();
+					String name = (String) headerIterator.next();
 
 					newMsg.setHeaderValue(name, origMsg.getHeaderValue(name));
 				}
 
-				final XQPart newPart = newMsg.createPart();
+				XQPart newPart = newMsg.createPart();
 
 				newPart.setContentId("Result");
 
@@ -89,14 +89,14 @@ public final class FileReaderService implements XQServiceEx {
 
 				env.setMessage(newMsg);
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				if (addressIterator.hasNext())
 					ctx.addOutgoing(env);
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

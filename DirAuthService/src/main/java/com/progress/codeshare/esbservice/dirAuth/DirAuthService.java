@@ -36,10 +36,10 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class DirAuthService implements XQServiceEx {
+public class DirAuthService implements XQServiceEx {
 
 	private static class BasicControl implements Control {
-		private static final long serialVersionUID = 2349027930790221141L;
+		private static long serialVersionUID = 2349027930790221141L;
 
 		private boolean criticality = false;
 
@@ -47,11 +47,11 @@ public final class DirAuthService implements XQServiceEx {
 
 		private byte[] value;
 
-		public BasicControl(final String id) {
+		public BasicControl(String id) {
 			this.id = id;
 		}
 
-		public BasicControl(final String id, final boolean criticality, final byte[] value) {
+		public BasicControl(String id, boolean criticality, byte[] value) {
 			this.id = id;
 			this.criticality = criticality;
 			this.value = value;
@@ -71,62 +71,62 @@ public final class DirAuthService implements XQServiceEx {
 
 	}
 
-	private static final String PARAM_INITIAL_CONTEXT_FACTORY = "initialContextFactory";
-	private static final String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
-	private static final String PARAM_MESSAGE_PART = "messagePart";
+	private static String PARAM_INITIAL_CONTEXT_FACTORY = "initialContextFactory";
+	private static String PARAM_KEEP_ORIGINAL_PART = "keepOriginalPart";
+	private static String PARAM_MESSAGE_PART = "messagePart";
 
-	private static final String PARAM_PROVIDER_URL = "providerUrl";
+	private static String PARAM_PROVIDER_URL = "providerUrl";
 
-	private final Hashtable CONF = new Hashtable();
+	private Hashtable CONF = new Hashtable();
 
 	public void destroy() {
 	}
 
-	public void init(final XQInitContext ctx) {
-		final XQParameters params = ctx.getParameters();
+	public void init(XQInitContext ctx) {
+		XQParameters params = ctx.getParameters();
 
 		CONF.put(Context.INITIAL_CONTEXT_FACTORY,
 				params.getParameter(PARAM_INITIAL_CONTEXT_FACTORY, XQConstants.PARAM_STRING));
 		CONF.put(Context.PROVIDER_URL, params.getParameter(PARAM_PROVIDER_URL, XQConstants.PARAM_STRING));
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		try {
-			final XQMessageFactory factory = ctx.getMessageFactory();
+			XQMessageFactory factory = ctx.getMessageFactory();
 
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final int messagePart = params.getIntParameter(PARAM_MESSAGE_PART, XQConstants.PARAM_STRING);
+			int messagePart = params.getIntParameter(PARAM_MESSAGE_PART, XQConstants.PARAM_STRING);
 
-			final boolean keepOriginalPart = params.getBooleanParameter(PARAM_KEEP_ORIGINAL_PART,
+			boolean keepOriginalPart = params.getBooleanParameter(PARAM_KEEP_ORIGINAL_PART,
 					XQConstants.PARAM_STRING);
 
 			while (ctx.hasNextIncoming()) {
-				final XQEnvelope env = ctx.getNextIncoming();
+				XQEnvelope env = ctx.getNextIncoming();
 
-				final XQMessage origMsg = env.getMessage();
+				XQMessage origMsg = env.getMessage();
 
-				final XQMessage newMsg = factory.createMessage();
+				XQMessage newMsg = factory.createMessage();
 
 				/*
 				 * Copy all headers of the original message to the new message
 				 */
-				final Iterator headerIterator = origMsg.getHeaderNames();
+				Iterator headerIterator = origMsg.getHeaderNames();
 
 				while (headerIterator.hasNext()) {
-					final String name = (String) headerIterator.next();
+					String name = (String) headerIterator.next();
 
 					newMsg.setHeaderValue(name, origMsg.getHeaderValue(name));
 				}
 
-				final Iterator addressIterator = env.getAddresses();
+				Iterator addressIterator = env.getAddresses();
 
 				for (int i = 0; i < origMsg.getPartCount(); i++) {
 
 					/* Decide whether to process the part or not */
 					if ((messagePart == i) || (messagePart == XQConstants.ALL_PARTS)) {
-						final XQPart origPart = origMsg.getPart(i);
+						XQPart origPart = origMsg.getPart(i);
 
 						/* Decide whether to keep the original part or not */
 						if (keepOriginalPart) {
@@ -135,35 +135,35 @@ public final class DirAuthService implements XQServiceEx {
 							newMsg.addPart(origPart);
 						}
 
-						final XQPart newPart = newMsg.createPart();
+						XQPart newPart = newMsg.createPart();
 
 						newPart.setContentId("Result-" + messagePart);
 
-						final DirAuthDocument reqDoc = DirAuthDocument.Factory.parse((String) origPart.getContent());
+						DirAuthDocument reqDoc = DirAuthDocument.Factory.parse((String) origPart.getContent());
 
-						final DirAuth req = reqDoc.getDirAuth();
+						DirAuth req = reqDoc.getDirAuth();
 
 						CONF.put(Context.SECURITY_AUTHENTICATION, req.getMethod());
 						CONF.put(Context.SECURITY_CREDENTIALS, req.getCredentials());
 						CONF.put(Context.SECURITY_PRINCIPAL, req.getPrincipal());
 
-						final Control[] reqCtrlArr = req.getControlArray();
+						Control[] reqCtrlArr = req.getControlArray();
 
-						final List reqCtrlList = new ArrayList();
+						List reqCtrlList = new ArrayList();
 
 						for (int j = 0; j < reqCtrlArr.length; j++)
 							reqCtrlList.add(new BasicControl(reqCtrlArr[i].getID()));
 
-						final DirAuthResponseDocument resDoc = DirAuthResponseDocument.Factory.newInstance();
+						DirAuthResponseDocument resDoc = DirAuthResponseDocument.Factory.newInstance();
 
-						final DirAuthResponse res = DirAuthResponse.Factory.newInstance();
+						DirAuthResponse res = DirAuthResponse.Factory.newInstance();
 
 						try {
 							new InitialLdapContext(CONF, (javax.naming.ldap.Control[]) reqCtrlList
 									.toArray(new javax.naming.ldap.Control[] {}));
 
 							res.setAuthenticated(true);
-						} catch (final NamingException e) {
+						} catch (NamingException e) {
 							res.setAuthenticated(false);
 						}
 
@@ -187,7 +187,7 @@ public final class DirAuthService implements XQServiceEx {
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 

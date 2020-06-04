@@ -34,31 +34,31 @@ import com.sonicsw.xq.XQServiceContext;
 import com.sonicsw.xq.XQServiceEx;
 import com.sonicsw.xq.XQServiceException;
 
-public final class SchService implements XQServiceEx {
-	private static final String PARAM_CONF_FILE = "confFile";
+public class SchService implements XQServiceEx {
+	private static String PARAM_CONF_FILE = "confFile";
 
 	private Scheduler scheduler;
 
 	public void destroy() {
 	}
 
-	public void init(final XQInitContext ctx) throws XQServiceException {
+	public void init(XQInitContext ctx) throws XQServiceException {
 
 		try {
 			scheduler = StdSchedulerFactory.getDefaultScheduler();
 
-			final XQParameters params = ctx.getParameters();
+			XQParameters params = ctx.getParameters();
 
-			final SchConfigDocument doc = SchConfigDocument.Factory
+			SchConfigDocument doc = SchConfigDocument.Factory
 					.parse(params.getParameter(PARAM_CONF_FILE,
 							XQConstants.PARAM_XML));
 
-			final SchConfig conf = doc.getSchConfig();
+			SchConfig conf = doc.getSchConfig();
 
-			final Job[] jobs = conf.getJobArray();
+			Job[] jobs = conf.getJobArray();
 
 			for (int i = 0; i < jobs.length; i++) {
-				final JobDetail detail = jobs[i].getJobDetail();
+				JobDetail detail = jobs[i].getJobDetail();
 
 				String jobGrp;
 
@@ -67,10 +67,10 @@ public final class SchService implements XQServiceEx {
 				else
 					jobGrp = detail.getGrp();
 
-				final org.quartz.JobDetail qtzDetail = new org.quartz.JobDetail(
+				org.quartz.JobDetail qtzDetail = new org.quartz.JobDetail(
 						detail.getName(), jobGrp, SchJob.class);
 
-				final JobDataMap map = new JobDataMap();
+				JobDataMap map = new JobDataMap();
 
 				map.put(SchConstants.PROP_CONNECTION_FACTORY, detail
 						.getConnFactory());
@@ -88,7 +88,7 @@ public final class SchService implements XQServiceEx {
 
 				qtzDetail.setJobDataMap(map);
 
-				final XmlCursor cur = jobs[i].newCursor();
+				XmlCursor cur = jobs[i].newCursor();
 
 				cur
 						.selectPath("declare namespace Sch='http://www.progress.com/codeshare/esbservice/sch/model'; Sch:Cron | Sch:Simple");
@@ -96,11 +96,11 @@ public final class SchService implements XQServiceEx {
 				Trigger qtzTrg = null;
 
 				while (cur.toNextSelection()) {
-					final com.progress.codeshare.esbservice.sch.model.Trigger trg = (com.progress.codeshare.esbservice.sch.model.Trigger) cur
+					com.progress.codeshare.esbservice.sch.model.Trigger trg = (com.progress.codeshare.esbservice.sch.model.Trigger) cur
 							.getObject();
 
 					if (trg instanceof CronTrigger) {
-						final CronTrigger cronTrg = (CronTrigger) trg;
+						CronTrigger cronTrg = (CronTrigger) trg;
 
 						String trgGrp;
 
@@ -109,7 +109,7 @@ public final class SchService implements XQServiceEx {
 						else
 							trgGrp = cronTrg.getGrp();
 
-						final org.quartz.CronTrigger qtzCronTrg = new org.quartz.CronTrigger(
+						org.quartz.CronTrigger qtzCronTrg = new org.quartz.CronTrigger(
 								cronTrg.getName(), trgGrp);
 
 						if (cronTrg.isSetStartTime())
@@ -127,7 +127,7 @@ public final class SchService implements XQServiceEx {
 
 						qtzTrg = qtzCronTrg;
 					} else if (trg instanceof SimpleTrigger) {
-						final SimpleTrigger simpleTrg = (SimpleTrigger) trg;
+						SimpleTrigger simpleTrg = (SimpleTrigger) trg;
 
 						String trgGrp;
 
@@ -136,7 +136,7 @@ public final class SchService implements XQServiceEx {
 						else
 							trgGrp = simpleTrg.getGrp();
 
-						final org.quartz.SimpleTrigger qtzSimpleTrg = new org.quartz.SimpleTrigger(
+						org.quartz.SimpleTrigger qtzSimpleTrg = new org.quartz.SimpleTrigger(
 								simpleTrg.getName(), trgGrp);
 
 						if (simpleTrg.isSetStartTime())
@@ -163,18 +163,18 @@ public final class SchService implements XQServiceEx {
 
 			}
 
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			throw new XQServiceException(e);
 		}
 
 	}
 
-	public void service(final XQServiceContext ctx) throws XQServiceException {
+	public void service(XQServiceContext ctx) throws XQServiceException {
 
 		while (ctx.hasNextIncoming()) {
-			final XQEnvelope env = ctx.getNextIncoming();
+			XQEnvelope env = ctx.getNextIncoming();
 
-			final Iterator addressIterator = env.getAddresses();
+			Iterator addressIterator = env.getAddresses();
 
 			if (addressIterator.hasNext())
 				ctx.addOutgoing(env);
@@ -187,7 +187,7 @@ public final class SchService implements XQServiceEx {
 
 		try {
 			scheduler.start();
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -197,7 +197,7 @@ public final class SchService implements XQServiceEx {
 
 		try {
 			scheduler.shutdown();
-		} catch (final Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

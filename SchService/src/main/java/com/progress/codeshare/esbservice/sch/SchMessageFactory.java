@@ -18,14 +18,14 @@ import javax.jms.Session;
 import org.quartz.JobDataMap;
 import org.quartz.jobs.ee.jms.JmsMessageFactory;
 
-public final class SchMessageFactory implements JmsMessageFactory {
+public class SchMessageFactory implements JmsMessageFactory {
 
-	public Message createMessage(final JobDataMap jobDataMap, final Session ses) {
+	public Message createMessage(JobDataMap jobDataMap, Session ses) {
 		Message result = null;
 
 		try {
 			result = ses.createMessage();
-		} catch (final JMSException e) {
+		} catch (JMSException e) {
 			e.printStackTrace();
 		}
 
